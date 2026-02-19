@@ -2,7 +2,11 @@
 
 #include <stdint.h>
 
+#ifdef LARGE_SANDBOX
+#define MAXCALLBACKS 40960
+#else
 #define MAXCALLBACKS 4096
+#endif
 
 #ifndef LAST_CALLBACK_KEY
 // A CallbackEntry is what gets inserted into the sandbox when a new callback

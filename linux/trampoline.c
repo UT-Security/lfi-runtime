@@ -163,6 +163,7 @@ lfi_linux_clone_cb(struct LFIBox *box)
     node->next = pthread_getspecific(thread_key);
     pthread_setspecific(thread_key, node);
 
+    lfi_ctx_thread_regs_init(new_ctx);
     return new_ctx;
 }
 

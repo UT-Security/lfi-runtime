@@ -15,4 +15,6 @@ EXPORT void
 lfi_ctx_regs_relink_ctxreg(struct LFIContext *ctx)
 {
     (void) ctx;
+lfi_ctx_thread_regs_init(struct LFIContext* ctx)
+{
 }
