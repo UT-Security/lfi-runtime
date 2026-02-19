@@ -94,6 +94,11 @@ _Static_assert(offsetof(struct LFIContext, abort_callback) == CTX_ABORT_CALLBACK
 _Static_assert(offsetof(struct LFIContext, abort_status) == CTX_ABORT_STATUS,
     "incorrect abort_callback offset");
 
+#ifdef LAST_CALLBACK_KEY
+_Static_assert(offsetof(struct LFIContext, last_callback_key) == CTX_LAST_CALLBACK_KEY,
+    "incorrect last_callback_key offset");
+#endif
+
 #elif defined(LFI_ARCH_RISCV64)
 
 _Static_assert(offsetof(struct LFIRegs, zero) == REGS_ZERO,

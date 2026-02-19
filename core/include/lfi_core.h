@@ -242,6 +242,10 @@ lfi_box_p2l(struct LFIBox *box, uintptr_t p);
 bool
 lfi_box_cbinit(struct LFIBox *box);
 
+void *
+lfi_box_register_cb_key(struct LFIBox *box, void *key, void *fn,
+    size_t stack_args);
+
 // Register fn as a callback. Returns the function pointer that should be
 // passed to the sandbox code in order to call 'fn'. Returns NULL if there are
 // no more callback slots available or if callback initialization failed.
@@ -258,6 +262,9 @@ lfi_box_register_cb_struct(struct LFIBox *box, void *fn);
 void
 lfi_box_unregister_cb(struct LFIBox *box, void *fn);
 
+void *
+lfi_box_lookup_cb(struct LFIBox *box, void *cb);
+
 // Mark the current callback as 'aborted' meaning it will directly return
 // instead of going back to the sandbox.
 void
@@ -266,6 +273,10 @@ lfi_ctx_abort_cb(struct LFIContext *ctx);
 // Returns true if the most recent callback was aborted.
 bool
 lfi_ctx_abort_cb_status(struct LFIContext *ctx);
+
+// Returns the key associated with the most recently invoked callback.
+void*
+lfi_ctx_last_cb_key(struct LFIContext *ctx);
 
 // Frees all resources associated with box and deallocates its reservation in
 // the LFIEngine in which it was allocated.
