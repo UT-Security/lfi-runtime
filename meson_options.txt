@@ -52,7 +52,7 @@ option('enable_segue',
   value: true,
   description: 'use %gs for the sandbox base (x86-64 only)')
 
-option('segue_single_sandbox',
+option('single_sandbox',
   type: 'boolean',
   value: false,
   description: 'assume that %gs is never modified by the host, and there is only one sandbox (x86-64 only)')
@@ -93,4 +93,4 @@ option('ctxreg_tp_offset',
 option('last_callback_key',
   type: 'boolean',
   value: false,
-  description: 'enable retrieving the most recently called sandbox callback')
+  description: 'enable retrieving the most recently called sandbox callback (x86-64 only)')

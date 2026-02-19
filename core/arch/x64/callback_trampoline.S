@@ -99,7 +99,7 @@
 1:
 
 #ifdef ENABLE_SEGUE
-# ifndef SEGUE_SINGLE_SANDBOX
+# ifndef SINGLE_SANDBOX
     wrgsbase %REG_BASE
 # endif
 #endif
