@@ -71,6 +71,13 @@ struct LFIContext {
     // Set to 1 if the most recent callback was aborted.
     uint64_t abort_status;
 
+#ifdef LAST_CALLBACK_KEY
+    // Set to key identifying the most recently invoked callback.
+    // This is guaranteed to be correct only on entry into a callback and
+    // not preserved across nested sandbox invocations.
+    void* last_callback_key;
+#endif
+
 #ifdef CTXREG
     // Context register storage. The first slot holds a pointer to this
     // LFIContext, and remaining slots are available for thread-local data

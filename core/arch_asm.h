@@ -110,6 +110,10 @@
 #define CTX_ABORT_CALLBACK 448
 #define CTX_ABORT_STATUS   456
 
+#ifdef LAST_CALLBACK_KEY
+#define CTX_LAST_CALLBACK_KEY 464
+#endif
+
 // clang-format off
 #ifdef __ASSEMBLER__
 #ifdef CTXREG

@@ -19,6 +19,7 @@ memfd_create(const char *name, unsigned flags)
 }
 #endif
 
+#ifndef LAST_CALLBACK_KEY
 // The callback entry code loads the target into %r10 and then jumps to the
 // trampoline address stored in the callback.
 static uint8_t cbentry_code[16] = {
@@ -28,12 +29,34 @@ static uint8_t cbentry_code[16] = {
     0x0f, 0x01f, 0x00,                        // nop
     // clang-format on
 };
+#else
+static uint8_t cbentry_code[40] = {
+    0x4c, 0x8b, 0x15, 0x21, 0x00, 0x00, 0x00, // mov    33(%rip), %r10 - load target into %r10
+    0x48, 0x8b, 0x05, 0x22, 0x00, 0x00, 0x00, // mov    34(%rip), %rax - load key into %rax
+    0xff, 0x25, 0x24, 0x00, 0x00, 0x00,       // jmp    *36(%rip)      - jump to trampoline
+
+    // NOP Pad out the remaining 12-bytes of the bundle.
+    0x66, 0x66, 0x2e, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x90,
+
+    // HLT to start the next bundle so it
+    // cant be jumped to.
+    0xf4,
+
+    // NOP Pad out the remaining 7-bytes
+    // before the 24-bytes of metadata.
+    0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00,
+};
+#endif
 
 extern void
 lfi_callback(void);
 
 extern void
 lfi_callback_struct(void);
+
+extern void
+lfi_callback_stack_args(void);
 
 static ssize_t
 cbfreeslot(struct LFIBox *box)
@@ -95,7 +118,7 @@ err:
 }
 
 static void *
-register_cb(struct LFIBox *box, void *fn, uint64_t lfi_callback_fn)
+register_cb(struct LFIBox *box, void* key, void *fn, uint64_t lfi_callback_fn)
 {
     if (!box->cbinfo.cbentries_box) {
         if (!init_cb(box)) {
@@ -104,9 +127,10 @@ register_cb(struct LFIBox *box, void *fn, uint64_t lfi_callback_fn)
         }
     }
 
+    assert(key);
     assert(fn);
 
-    ssize_t slot = cbfind(box, fn);
+    ssize_t slot = cbfind(box, key);
     if (slot != -1)
         return &box->cbinfo.cbentries_box[slot].code[0];
 
@@ -117,26 +141,44 @@ register_cb(struct LFIBox *box, void *fn, uint64_t lfi_callback_fn)
     // Write 'fn' into the 'target' field for the chosen slot.
     atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].target,
         (uint64_t) fn, memory_order_seq_cst);
+#ifdef LAST_CALLBACK_KEY
+    // Write key into the 'key' field for the chosen slot.
+    atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].key,
+        (uint64_t) key, memory_order_seq_cst);
+#endif
     // Write the trampoline into the 'trampoline' field for the chosen slot
     atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].trampoline,
         (uint64_t) lfi_callback_fn, memory_order_seq_cst);
 
     // Mark the slot as allocated.
-    box->callbacks[slot] = fn;
+    box->callbacks[slot] = key;
 
     return &box->cbinfo.cbentries_box[slot].code[0];
 }
 
 EXPORT void *
+lfi_box_register_cb_key(struct LFIBox *box, void *key, void *fn,
+    size_t stack_args)
+{
+#ifdef LAST_CALLBACK_KEY
+    return register_cb(box, fn,
+        stack_args == 0 ? (uint64_t) lfi_callback :
+                          (uint64_t) lfi_callback_stack_args);
+#else
+    return NULL;
+#endif
+}
+
+EXPORT void *
 lfi_box_register_cb_struct(struct LFIBox *box, void *fn)
 {
-    return register_cb(box, fn, (uint64_t) lfi_callback_struct);
+    return register_cb(box, fn, fn, (uint64_t) lfi_callback_struct);
 }
 
 EXPORT void *
 lfi_box_register_cb(struct LFIBox *box, void *fn)
 {
-    return register_cb(box, fn, (uint64_t) lfi_callback);
+    return register_cb(box, fn, fn, (uint64_t) lfi_callback);
 }
 
 EXPORT void
@@ -148,6 +190,30 @@ lfi_box_unregister_cb(struct LFIBox *box, void *fn)
     box->callbacks[slot] = NULL;
     atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].target, 0,
         memory_order_seq_cst);
+#ifdef LAST_CALLBACK_KEY
+    atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].key, 0,
+        memory_order_seq_cst);
+#endif
     atomic_store_explicit(&box->cbinfo.cbentries_alias[slot].trampoline, 0,
         memory_order_seq_cst);
+}
+
+EXPORT void *
+lfi_box_lookup_cb(struct LFIBox *box, void* cb)
+{
+    assert(cb);
+
+    if (cb < (void *) &box->cbinfo.cbentries_box[0] ||
+        cb >= (void *) ((uint8_t *) &box->cbinfo.cbentries_box[0] +
+                  CALLBACK_ENTRIES_SIZE)) {
+        return NULL;
+    }
+
+    size_t slot = ((uint8_t *) cb - (uint8_t *) &box->cbinfo.cbentries_box[0]) /
+        sizeof(struct CallbackEntry);
+
+    assert(slot < MAXCALLBACKS);
+    assert(&box->cbinfo.cbentries_box[slot].code[0] == cb);
+
+    return box->callbacks[slot];
 }

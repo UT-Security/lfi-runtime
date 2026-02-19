@@ -66,3 +66,8 @@ option('ctxreg',
   type: 'boolean',
   value: false,
   description: 'enable context register (x25 on arm64, r15 on x64) for storing runtime context')
+
+option('last_callback_key',
+  type: 'boolean',
+  value: false,
+  description: 'enable retrieving the most recently called sandbox callback')

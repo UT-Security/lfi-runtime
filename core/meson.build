@@ -17,6 +17,10 @@ if get_option('stores_only')
   defines += ['-DSTORES_ONLY']
 endif
 
+if get_option('callback_key')
+  defines += ['-DCALLBACK_KEY']
+endif
+
 subdir('arch/' + archmap[cpu])
 
 liblfi_core = static_library(

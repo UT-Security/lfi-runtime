@@ -114,3 +114,13 @@ lfi_ctx_abort_status(struct LFIContext *ctx)
 {
     return ctx->abort_status == 1;
 }
+
+EXPORT void *
+lfi_ctx_last_cb_key(struct LFIContext *ctx)
+{
+#ifdef LAST_CALLBACK_KEY
+    return ctx->last_callback_key;
+#else
+    return NULL;
+#endif
+}
