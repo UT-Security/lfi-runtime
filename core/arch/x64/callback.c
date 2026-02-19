@@ -161,7 +161,7 @@ lfi_box_register_cb_key(struct LFIBox *box, void *key, void *fn,
     size_t stack_args)
 {
 #ifdef LAST_CALLBACK_KEY
-    return register_cb(box, fn,
+    return register_cb(box, key, fn,
         stack_args == 0 ? (uint64_t) lfi_callback :
                           (uint64_t) lfi_callback_stack_args);
 #else
