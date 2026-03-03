@@ -22,8 +22,8 @@ if get_option('stores_only')
   defines += ['-DSTORES_ONLY']
 endif
 
-if get_option('callback_key')
-  defines += ['-DCALLBACK_KEY']
+if get_option('last_callback_key')
+  defines += ['-DLAST_CALLBACK_KEY']
 endif
 
 subdir('arch/' + archmap[cpu])
