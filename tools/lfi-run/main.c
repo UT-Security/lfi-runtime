@@ -178,7 +178,7 @@ main(int argc, char **argv)
 
     struct LFILinuxEngine *linux_ = lfi_linux_new(engine,
         (struct LFILinuxOptions) {
-            .stacksize = mb(2),
+            .stacksize = mb(3), // FF specific
             .verbose = verbose,
             .exit_unknown_syscalls = true,
             .dir_maps = restricted ? dirs : all,
