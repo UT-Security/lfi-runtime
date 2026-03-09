@@ -93,10 +93,10 @@ lfi_new(struct LFIOptions opts, size_t nsandboxes)
     }
 
     struct BoxMapOptions bm_opts = (struct BoxMapOptions) {
-        .chunksize = gb(4),
+        .chunksize = opts.boxsize,
         // This is the guard size between the edge of the boxmap region and the
         // outer world.
-        .guardsize = box_footprint(gb(4), opts),
+        .guardsize = box_footprint(opts.boxsize, opts),
     };
     struct BoxMap *bm = boxmap_new(bm_opts);
     if (!bm) {
