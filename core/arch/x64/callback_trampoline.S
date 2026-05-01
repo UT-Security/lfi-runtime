@@ -1,5 +1,7 @@
 #include "arch_asm.h"
 
+lfi_cet_note
+
 .text
 
 .macro zero_caller_regs
@@ -158,16 +160,19 @@
 .p2align 4
 .global lfi_callback
 lfi_callback:
+    endbr64
     lfi_callback_gen 0 0
 
 .p2align 4
 .global lfi_callback_struct
 lfi_callback_struct:
+    endbr64
     lfi_callback_gen 1 0
 
 .p2align 4
 .global lfi_callback_stack_args
 lfi_callback_stack_args:
+    endbr64
     lfi_callback_gen 0 1
 
 #ifndef __APPLE__
