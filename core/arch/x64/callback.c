@@ -204,6 +204,8 @@ lfi_box_cb_free(struct LFIBox *box)
     if (box->cbinfo.cbentries_alias)
         munmap(box->cbinfo.cbentries_alias,
             MAXCALLBACKS * sizeof(struct CallbackEntry));
+}
+
 EXPORT void *
 lfi_box_lookup_cb(struct LFIBox *box, void* cb)
 {
