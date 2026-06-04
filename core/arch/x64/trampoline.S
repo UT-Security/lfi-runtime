@@ -9,7 +9,7 @@
     xorq %r12, %r12
     xorq %r13, %r13
     // skip %r14 (base)
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     xorq %r15, %r15
 #endif
     xorps %xmm8, %xmm8
@@ -119,7 +119,7 @@ lfi_trampoline_struct:
     movq INVOKE_BOX(%r13), %r14
     movq INVOKE_CTX(%r13), %r13
     movq %r13, %r11
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     movq $0, %r15
 #endif
 
@@ -160,7 +160,7 @@ lfi_trampoline:
     movq INVOKE_BOX(%r13), %r14
     movq INVOKE_CTX(%r13), %r13
     movq %r13, %r11
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     movq $0, %r15
 #endif
 
@@ -355,7 +355,7 @@ lfi_trampoline_stack_args:
     addq %REG_BASE, %r11
 
     movq (%r13), %r13
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     // set the sandbox thread control block by saving the old value of
     // %fs:TLS_SLOT_LFI into the context and setting it to point to the context
     // itself

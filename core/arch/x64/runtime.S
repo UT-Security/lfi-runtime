@@ -18,7 +18,7 @@ lfi_ctx_entry:
     // put entrypoint in %r11
     movq %rdx, %r11
 
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     // set the sandbox thread control block by saving the old value of
     // %fs:TLS_SLOT_LFI into the context and setting it to point to the context
     // itself.
@@ -85,7 +85,7 @@ lfi_ctx_entry:
 lfi_ctx_end:
     // restore host_sp
     movq REGS_HOST_SP(%rdi), %rsp
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     // restore host_tp
     movq REGS_HOST_TP(%rdi), %rbp
     write_ctx %rbp
@@ -144,7 +144,7 @@ lfi_syscall_entry:
     movq %xmm14, REGS_XMM(14)(%rcx)
     movq %xmm15, REGS_XMM(15)(%rcx)
 
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     // swap the thread control block back to the host one
     movq REGS_HOST_TP(%rcx), %rdi
     write_ctx %rdi
@@ -158,7 +158,7 @@ lfi_syscall_entry:
     callq lfi_syscall_handler
     popq %rcx
 
-#ifndef CTXREG
+#if !defined(CTXREG) && !defined(CTXREG_ALT)
     // swap thread control block back to context pointer
     write_ctx %rcx
 #endif

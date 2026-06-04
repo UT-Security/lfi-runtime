@@ -49,7 +49,7 @@ option('stores_only',
 # speed of trampolines on x86-64. You can benchmark with test_trampoline.c.
 option('enable_segue',
   type: 'boolean',
-  value: true,
+  value: false,
   description: 'use %gs for the sandbox base (x86-64 only)')
 
 option('single_sandbox',
@@ -79,8 +79,13 @@ option('sys_minimal',
 
 option('ctxreg',
   type: 'boolean',
-  value: true,
+  value: false,
   description: 'enable context register (x25 on arm64, r15 on x64) for storing runtime context')
+
+option('ctxreg_alt',
+  type: 'boolean',
+  value: true,
+  description: 'enable alternate context register (gs, x64 only) for storing runtime context')
 
 option('ctxreg_ctx_offset',
   type: 'integer',
@@ -95,6 +100,7 @@ option('ctxreg_tp_offset',
   max: 56,
   value: 16,
   description: 'byte offset of the thread pointer within the ctxreg array (must be a multiple of 8)')
+
 option('last_callback_key',
   type: 'boolean',
   value: false,

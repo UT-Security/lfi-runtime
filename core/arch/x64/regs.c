@@ -12,7 +12,12 @@ lfi_ctx_regs_init(struct LFIContext *ctx)
     ctx->regs.mxcsr = 0x1f80;
 #ifdef LARGE_SANDBOX
     ctx->regs.REG_MASK = ctx->box->size - 1;
-    ctx->regs._tp = 0;
+    #ifdef CTXREG_ALT
+        // __asm__ __volatile__("wrgsbase %0" : : "r"((uint64_t) ctx->ctxreg));
+        ctx->ctxreg[CTXREG_CTX_OFFSET / 8] = (uint64_t) ctx;
+    #else
+        ctx->regs._tp = 0;
+    #endif
 #else
 #ifdef CTXREG
     ctx->regs.r15 = (uint64_t) ctx->ctxreg;
@@ -26,7 +31,10 @@ lfi_ctx_regs_init(struct LFIContext *ctx)
 EXPORT void
 lfi_ctx_thread_regs_init(struct LFIContext* ctx)
 {
-#if defined(LARGE_SANDBOX) && defined(SINGLE_SANDBOX)
+#ifdef CTXREG_ALT
+    __asm__ __volatile__("wrgsbase %0" : : "r"((uint64_t) ctx->ctxreg));
+    ctx->ctxreg[CTXREG_CTX_OFFSET / 8] = (uint64_t) ctx;
+#elif defined(LARGE_SANDBOX) && defined(SINGLE_SANDBOX)
     __asm__ __volatile__("wrgsbase %0" : : "r"(ctx->regs._tp));
 #endif
 }

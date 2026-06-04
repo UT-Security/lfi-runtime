@@ -67,7 +67,7 @@ lfi_ctx_regs(struct LFIContext *ctx)
 EXPORT uint64_t
 lfi_ctx_get_tp(struct LFIContext *ctx)
 {
-#ifdef CTXREG
+#if defined(CTXREG) || defined(CTXREG_ALT)
     return ctx->ctxreg[CTXREG_TP_OFFSET / 8];
 #else
     return ctx->regs._tp;
@@ -86,6 +86,9 @@ lfi_ctx_set_tp(struct LFIContext *ctx, uint64_t tp)
 # else
 # error "CTXREG: architecture not supported"
 # endif
+#elif defined(CTXREG_ALT)
+    ctx->ctxreg[CTXREG_TP_OFFSET / 8] = tp;
+    // __asm__ __volatile__("wrgsbase %0" : : "r"((uint64_t) &ctx->ctxreg[0]));
 #else
     ctx->regs._tp = tp;
 #endif

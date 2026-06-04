@@ -128,6 +128,13 @@
 
 .macro write_ctx reg
 .endm
+#elif defined(CTXREG_ALT)
+.macro get_ctx reg
+    movq %gs:(CTXREG_CTX_OFFSET), \reg
+.endm
+
+.macro write_ctx reg
+.endm
 #else
 .macro get_ctx reg
     movq %fs:(8*TLS_SLOT_LFI), \reg

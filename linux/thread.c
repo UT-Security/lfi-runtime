@@ -220,6 +220,7 @@ lfi_thread_new(struct LFILinuxProc *proc, int argc, const char **argv,
         goto err1;
     t->proc = proc;
     t->ctx = lfi_ctx_new(proc->box, t);
+    lfi_ctx_thread_regs_init(t->ctx);
     if (!t->ctx)
         goto err2;
     t->tid = next_tid(proc);

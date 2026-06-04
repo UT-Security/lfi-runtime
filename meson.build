@@ -131,6 +131,11 @@ if get_option('ctxreg')
   defines += '-DCTXREG_CTX_OFFSET=@0@'.format(get_option('ctxreg_ctx_offset'))
   defines += '-DCTXREG_TP_OFFSET=@0@'.format(get_option('ctxreg_tp_offset'))
 endif
+if get_option('ctxreg_alt')
+  defines += '-DCTXREG_ALT'
+  defines += '-DCTXREG_CTX_OFFSET=@0@'.format(get_option('ctxreg_ctx_offset'))
+  defines += '-DCTXREG_TP_OFFSET=@0@'.format(get_option('ctxreg_tp_offset'))
+endif
 
 if not meson.is_subproject()
   add_global_arguments(c_args, language: 'c')
