@@ -94,7 +94,7 @@ main(int argc, char **argv)
     const char **dirs = NULL;
     int dirs_count = 0;
     const char *wd = NULL;
-    size_t boxsize = gb(4);
+    size_t boxsize = gb(1024);
     bool restricted = false;
 
     static struct option long_options[] = {
@@ -177,7 +177,7 @@ main(int argc, char **argv)
             .no_verify = !verify,
             .verbose = verbose,
         },
-        4);
+        1);
     if (!engine) {
         fprintf(stderr, "failed to create LFI engine: %s\n", lfi_errmsg());
         exit(1);

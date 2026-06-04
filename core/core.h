@@ -83,7 +83,7 @@ struct LFIContext {
     void* last_callback_key;
 #endif
 
-#ifdef CTXREG
+#if defined(CTXREG) || defined(CTXREG_ALT)
     // Context register storage. The first slot holds a pointer to this
     // LFIContext, and remaining slots are available for thread-local data
     // (e.g., thread pointer).
@@ -142,14 +142,17 @@ gb(size_t x)
 
 #elif defined(LFI_ARCH_X64)
 
-#define BOX_INTERNAL_GUARD 0
+// #define BOX_INTERNAL_GUARD 0
+#define BOX_INTERNAL_GUARD gb(4)
+
 #ifdef HAVE_PKU
 #define BOX_EXTERNAL_GUARD 0
 #define REGION_GUARD       0
 #else
 // TODO: verify that we can safely reduce BOX_EXTERNAL_GUARD if Segue is
 // enabled.
-#define BOX_EXTERNAL_GUARD gb(40)
+// #define BOX_EXTERNAL_GUARD gb(40)
+#define BOX_EXTERNAL_GUARD 0
 #define REGION_GUARD       gb(40)
 #endif
 
