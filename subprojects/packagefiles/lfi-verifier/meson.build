@@ -28,7 +28,7 @@ arch = arch_raw.split(',')
 
 dependencies = []
 srcs = []
-c_defines = []
+c_defines = ['-DCTXREG_TP_OFFSET=' + get_option('ctxreg_tp_offset').to_string()]
 
 if 'arm64' in arch
   dependencies += subproject('disarm').get_variable('disarm64').as_link_whole()
@@ -40,8 +40,11 @@ endif
 if 'x64' in arch
   dependencies += subproject('fadec').get_variable('fadec').as_link_whole()
   srcs += files(
-    'src/x64/verify.c',
-    'src/x64/bdd.c',
+    # 'src/x64/verify.c',
+    # 'src/x64/bdd.c',
+    'src/x64_large/verify.c',
+    'src/x64_large/bdd.c',
+    'src/x64_large/bddinc.S',
   )
   c_defines += '-DARCH_X64'
 endif

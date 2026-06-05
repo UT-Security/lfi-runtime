@@ -23,7 +23,7 @@ init_verifier(struct LFIVerifier *v, struct LFIOptions *opts)
     else
         v->opts.box = LFI_BOX_FULL;
 
-#ifdef CTXREG
+#if defined(CTXREG) | defined(CTXREG_ALT)
     v->opts.ctxreg = true;
 #endif
     v->opts.err = logerr;
@@ -32,6 +32,7 @@ init_verifier(struct LFIVerifier *v, struct LFIOptions *opts)
     v->verify = lfiv_verify_arm64;
 #elif defined(LFI_ARCH_X64)
 #ifdef LARGE_SANDBOX
+    v->opts.box = LFI_BOX_STORES;
     v->opts.guardsize = gb(2); // NOTE: temporarily hardcoded
     v->verify = lfiv_verify_x64_large;
 #else

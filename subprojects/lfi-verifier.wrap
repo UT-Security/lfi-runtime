@@ -1,5 +1,5 @@
 [wrap-git]
-url = https://github.com/lfi-project/lfi-verifier.git
-revision = master
+url = https://github.com/UT-Security/lfi-verifier.git
+revision = x64-large-0605
 directory = lfi-verifier
 patch_directory = lfi-verifier
