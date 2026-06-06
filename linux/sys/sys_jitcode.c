@@ -109,13 +109,16 @@ sys_jitcode_create2(struct LFILinuxThread *t, lfiptr addrp, lfiptr headerp,
 
 int
 sys_jitcode_modify(struct LFILinuxThread *t, lfiptr addrp, size_t valp,
-    size_t length, int halt_pad)
+    size_t length, size_t halt_pad_offset)
 {
     if (length > 5)
         return -LINUX_EINVAL;
-    int r = proc_jit_modify(t->proc, addrp, valp, length, halt_pad);
-    LOG(t->proc->engine, "sys_jitcode_modify((%lx), %zu, %zu, %d) = %d",
-        addrp, valp, length, halt_pad, r);
+    int bundle_size = 32;
+    if (halt_pad_offset >= bundle_size)
+        return -LINUX_EINVAL;
+    int r = proc_jit_modify(t->proc, addrp, valp, length, halt_pad_offset);
+    LOG(t->proc->engine, "sys_jitcode_modify((%lx), %zu, %zu, %zu) = %d",
+        addrp, valp, length, halt_pad_offset, r);
     return r;
 }
 

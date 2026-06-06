@@ -187,7 +187,7 @@ proc_jit_create2(struct LFILinuxProc *p, lfiptr dst, uint8_t *header,
 
 int
 proc_jit_modify(struct LFILinuxProc *p, lfiptr src, size_t value,
-    size_t patch_len, int halt_pad)
+    size_t patch_len, size_t halt_pad_offset)
 {
     LOCK_WITH_DEFER(&p->lk_box, lk_box);
     if (p->jit_base == 0)
@@ -199,6 +199,10 @@ proc_jit_modify(struct LFILinuxProc *p, lfiptr src, size_t value,
 
     // Patch must not span two bundles.
     if (dst != ((src + patch_len - 1) & bundle_mask))
+        return -LINUX_EINVAL;
+
+    // Halt pad must start behind patch
+    if (patch_offset > halt_pad_offset)
         return -LINUX_EINVAL;
 
     size_t size = 32;
@@ -216,8 +220,8 @@ proc_jit_modify(struct LFILinuxProc *p, lfiptr src, size_t value,
         return -1;
 
     uint8_t *jit_addr = jit_get_aliasptr(p, dst);
-    if (halt_pad)
-        memset(jit_addr, 0xf4, patch_offset);
+    if (halt_pad_offset)
+        memset(jit_addr + halt_pad_offset, 0xf4, patch_offset - halt_pad_offset);
     memcpy(jit_addr + patch_offset, &value, patch_len);
 
     // TODO: this will raise two mprotects NONE->READ-(verifier)->READ/EXEC
