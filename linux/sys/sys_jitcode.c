@@ -113,9 +113,6 @@ sys_jitcode_modify(struct LFILinuxThread *t, lfiptr addrp, size_t valp,
 {
     if (length > 5)
         return -LINUX_EINVAL;
-    int bundle_size = 32;
-    if (halt_pad_offset >= bundle_size)
-        return -LINUX_EINVAL;
     int r = proc_jit_modify(t->proc, addrp, valp, length, halt_pad_offset);
     LOG(t->proc->engine, "sys_jitcode_modify((%lx), %zu, %zu, %zu) = %d",
         addrp, valp, length, halt_pad_offset, r);
