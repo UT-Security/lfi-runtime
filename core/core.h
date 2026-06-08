@@ -142,8 +142,7 @@ gb(size_t x)
 
 #elif defined(LFI_ARCH_X64)
 
-// #define BOX_INTERNAL_GUARD 0
-#define BOX_INTERNAL_GUARD gb(4)
+#define BOX_INTERNAL_GUARD 0
 
 #ifdef HAVE_PKU
 #define BOX_EXTERNAL_GUARD 0
@@ -151,9 +150,8 @@ gb(size_t x)
 #else
 // TODO: verify that we can safely reduce BOX_EXTERNAL_GUARD if Segue is
 // enabled.
-// #define BOX_EXTERNAL_GUARD gb(40)
-#define BOX_EXTERNAL_GUARD 0
-#define REGION_GUARD       gb(40)
+#define BOX_EXTERNAL_GUARD gb(1024)
+#define REGION_GUARD       gb(4)
 #endif
 
 #elif defined(LFI_ARCH_RISCV64)
