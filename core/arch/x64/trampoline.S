@@ -237,7 +237,7 @@ lfi_trampoline_direct:
     // load address of the target function
     movq %r12, %r11
     // apply mask just to be safe
-#ifdef LARGE_SANDBOX
+#if defined(LARGE_SANDBOX) && !defined(CFI_MASKS_4GB)
     andq %r15, %r11
     andq $0xffffffffffffffe0, %r11
 #else
@@ -350,7 +350,7 @@ lfi_trampoline_stack_args:
     // load address of the target function
     movq %r12, %r11
     // apply mask just to be safe
-#ifdef LARGE_SANDBOX
+#if defined(LARGE_SANDBOX) && !defined(CFI_MASKS_4GB)
     andq %r15, %r11
     andq $0xffffffffffffffe0, %r11
 #else

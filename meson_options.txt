@@ -72,6 +72,12 @@ option('enable_cet',
   value: false,
   description: 'enable Intel CET SHSTK/IBT support on x86-64')
 
+# This probably needs to be made x86-64 only
+option('cfi_masks_4gb',
+  type: 'boolean',
+  value: false,
+  description: 'enable 4 GB CFI masks on x86-64')
+
 option('static_lfi_run',
   type: 'boolean',
   value: false,
@@ -87,6 +93,7 @@ option('ctxreg',
   value: false,
   description: 'enable context register (x25 on arm64, r15 on x64) for storing runtime context')
 
+# This probably needs to be made x86-64 only
 option('ctxreg_alt',
   type: 'boolean',
   value: true,

@@ -28,6 +28,18 @@ init_verifier(struct LFIVerifier *v, struct LFIOptions *opts)
 #endif
     v->opts.err = logerr;
 
+#ifdef ENABLE_CET
+    v->opts.ret_type = LFI_NOMASK_RET;
+#else
+    v->opts.ret_type = LFI_MASK_JMP;
+#endif
+
+#ifdef CFI_MASKS_4GB
+    v->opts.mask_type = LFI_4GB_MASK;
+#else
+    v->opts.mask_type = LFI_VARIABLE_MASK;
+#endif
+
 #if defined(LFI_ARCH_ARM64)
     v->verify = lfiv_verify_arm64;
 #elif defined(LFI_ARCH_X64)

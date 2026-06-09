@@ -146,7 +146,7 @@ lfi_cet_note
 
     // NOTE: This pop instruction could fault.
     popq %r11
-#ifdef LARGE_SANDBOX
+#if defined(LARGE_SANDBOX) && !defined(CFI_MASKS_4GB)
     andq %REG_MASK, %r11
     andq $0xffffffffffffffe0, %r11
     addq %REG_BASE, %r11
